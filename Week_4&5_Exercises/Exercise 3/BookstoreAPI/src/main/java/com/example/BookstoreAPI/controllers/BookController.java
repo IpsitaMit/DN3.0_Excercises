@@ -1,21 +1,26 @@
 package com.example.BookstoreAPI.controllers;
 
-import org.springframework.web.bind.annotation.*;
 import com.example.BookstoreAPI.models.Book;
+
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
 public class BookController {
 
+
     private List<Book> bookList = new ArrayList<>();
 
     // Sample data
     public BookController() {
-        bookList.add(new Book(1, "1984", "George Orwell", 9.99, "1234567890"));
-        bookList.add(new Book(2, "Brave New World", "Aldous Huxley", 12.99, "0987654321"));
+        bookList.add(new Book(1, "Percy Jackson", "Rick Riordan", 399, "1234567890"));
+        bookList.add(new Book(2, "Hunger Games", "Suzzane Collins", 499, "0987654321"));
     }
 
     @GetMapping
@@ -28,7 +33,7 @@ public class BookController {
         return bookList.stream()
                 .filter(book -> book.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Book not found"));
     }
 
     @PostMapping
@@ -42,7 +47,7 @@ public class BookController {
         Book book = bookList.stream()
                 .filter(b -> b.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Book not found"));
 
         book.setTitle(updatedBook.getTitle());
         book.setAuthor(updatedBook.getAuthor());
@@ -56,19 +61,17 @@ public class BookController {
         Book book = bookList.stream()
                 .filter(b -> b.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Book not found"));
 
         bookList.remove(book);
         return "Book deleted successfully!";
     }
 
-    // New endpoint for filtering books using query parameters
     @GetMapping("/search")
-    public List<Book> filterBooks(@RequestParam(required = false) String title,
-                                  @RequestParam(required = false) String author) {
+    public List<Book> searchBooks(@RequestParam(required = true) String keyword){
         return bookList.stream()
-                .filter(book -> (title == null || book.getTitle().equalsIgnoreCase(title)) &&
-                        (author == null || book.getAuthor().equalsIgnoreCase(author)))
-                .toList();
+        .filter(b -> b.getTitle().toLowerCase().contains(keyword.toLowerCase()) || b.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+        .collect(Collectors.toList());
+        
     }
 }

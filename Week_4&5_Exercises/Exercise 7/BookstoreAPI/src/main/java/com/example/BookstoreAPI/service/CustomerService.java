@@ -1,16 +1,51 @@
 package com.example.BookstoreAPI.service;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import com.example.BookstoreAPI.dto.CustomerDTO;
 import com.example.BookstoreAPI.models.Customer;
-import java.util.List;
-import java.util.Optional;
-public interface CustomerService {
 
-    List<Customer> getAllCustomers();
+@Service
+public class CustomerService {
+    @Autowired
+    public List<Customer> customerList;
 
-    Optional<Customer> getCustomerById(int id);
+    @Autowired
+    public ModelMapper modelMapper;
 
-    Customer createCustomer(Customer customer);
+    public List<CustomerDTO> getCustomers(){
+        List<CustomerDTO> customers = customerList.stream()
+        .map(customerList -> userToDto(customerList))
+        .collect(Collectors.toList());
+        return customers;
+    }
 
-    Customer updateCustomer(Customer customer);
+    public void addCustomer(CustomerDTO customerDTO){
+        Customer customer=dtoToUser(customerDTO);
+        customer.setId((int) (customerList.size() + 1));
+        customerList.add(customer);
+    }
 
-    void deleteCustomer(int id);
+    public void registerCustomer(String name, String email, String address){
+        Customer customer = new Customer();
+        customer.setId((int) (customerList.size() + 1));
+        customer.setName(name);
+        customer.setEmail(email);
+        customerList.add(customer);
+    }
+
+    public CustomerDTO userToDto(Customer customer){
+        CustomerDTO customerDTO = modelMapper.map(customer, CustomerDTO.class);
+        return customerDTO;
+    }
+
+    public Customer dtoToUser(CustomerDTO customerDTO){
+        Customer customer = modelMapper.map(customerDTO, Customer.class);
+        return customer;
+    }
 }

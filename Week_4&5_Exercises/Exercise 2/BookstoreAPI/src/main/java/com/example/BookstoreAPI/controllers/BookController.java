@@ -15,8 +15,8 @@ public class BookController {
 
     // Sample data
     public BookController() {
-        bookList.add(new Book(1, "1984", "George Orwell", 9.99, "1234567890"));
-        bookList.add(new Book(2, "Brave New World", "Aldous Huxley", 12.99, "0987654321"));
+        bookList.add(new Book(1, "Percy Jackson", "Rick Riordan", 399, "1234567890"));
+        bookList.add(new Book(2, "Hunger Games", "Suzzane Collins", 499, "0987654321"));
     }
 
     @GetMapping
